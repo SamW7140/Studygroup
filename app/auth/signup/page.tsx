@@ -5,6 +5,9 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+
+// Force dynamic rendering
+export const dynamic = 'force-dynamic'
 import { Card } from '@/components/ui/card'
 import Link from 'next/link'
 import { BookOpen } from 'lucide-react'
