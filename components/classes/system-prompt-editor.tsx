@@ -63,10 +63,10 @@ export function SystemPromptEditor({ classId, initialSystemPrompt }: SystemPromp
       <div className="rounded-lg bg-blue-500/10 border border-blue-500/20 p-4">
         <h3 className="mb-2 text-sm font-semibold text-blue-400">Guidelines for System Prompts</h3>
         <ul className="space-y-1 text-sm text-blue-300">
-          <li>• Be clear about the AI's role and purpose</li>
+          <li>• Be clear about the AI&apos;s role and purpose</li>
           <li>• Set expectations for response style (e.g., concise, detailed, formal)</li>
           <li>• Specify any constraints or limitations</li>
-          <li>• Consider your students' needs and learning objectives</li>
+          <li>• Consider your students&apos; needs and learning objectives</li>
         </ul>
       </div>
 
@@ -104,22 +104,22 @@ export function SystemPromptEditor({ classId, initialSystemPrompt }: SystemPromp
           <div>
             <p className="text-xs font-semibold text-foreground">Strict Academic Style:</p>
             <p className="mt-1 rounded bg-secondary p-2 text-xs text-muted-foreground font-mono">
-              "You are a formal academic assistant. Provide detailed, scholarly responses with proper terminology. 
-              Always cite sources from the course materials. If uncertain, explicitly state limitations."
+              &quot;You are a formal academic assistant. Provide detailed, scholarly responses with proper terminology. 
+              Always cite sources from the course materials. If uncertain, explicitly state limitations.&quot;
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-foreground">Friendly Tutor Style:</p>
             <p className="mt-1 rounded bg-secondary p-2 text-xs text-muted-foreground font-mono">
-              "You are a friendly study buddy helping students understand course concepts. Use simple language, 
-              provide examples, and encourage learning. Be supportive and approachable."
+              &quot;You are a friendly study buddy helping students understand course concepts. Use simple language, 
+              provide examples, and encourage learning. Be supportive and approachable.&quot;
             </p>
           </div>
           <div>
             <p className="text-xs font-semibold text-foreground">Socratic Method:</p>
             <p className="mt-1 rounded bg-secondary p-2 text-xs text-muted-foreground font-mono">
-              "Guide students to discover answers through questions rather than direct answers. 
-              Help them think critically about the course materials. Ask probing questions to deepen understanding."
+              &quot;Guide students to discover answers through questions rather than direct answers. 
+              Help them think critically about the course materials. Ask probing questions to deepen understanding.&quot;
             </p>
           </div>
         </div>

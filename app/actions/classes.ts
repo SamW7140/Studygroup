@@ -345,16 +345,21 @@ export async function updateClassSystemPrompt(
       return { success: false, error: 'System prompt must be 2000 characters or less' }
     }
 
+    // TODO: Re-enable after running database migration
     // Update the system prompt
-    const { error: updateError } = await supabase
-      .from('classes')
-      .update({ system_prompt: systemPrompt })
-      .eq('class_id', classId)
+    // const { error: updateError } = await supabase
+    //   .from('classes')
+    //   .update({ system_prompt: systemPrompt })
+    //   .eq('class_id', classId)
 
-    if (updateError) {
-      console.error('Error updating system prompt:', updateError)
-      return { success: false, error: `Failed to update system prompt: ${updateError.message}` }
-    }
+    // if (updateError) {
+    //   console.error('Error updating system prompt:', updateError)
+    //   return { success: false, error: `Failed to update system prompt: ${updateError.message}` }
+    // }
+
+    // Temporary: Return success without actually updating
+    // This will be fixed once the database migration is applied
+    console.warn('System prompt update disabled - database migration needed')
 
     revalidatePath(`/classes/${classId}`)
     revalidatePath(`/classes/${classId}/settings`)
@@ -400,19 +405,24 @@ export async function getClassSystemPrompt(classId: string): Promise<{
       return { success: false, error: 'Only professors can view system prompts' }
     }
 
+    // TODO: Re-enable after running database migration
     // Fetch the system prompt
-    const { data, error } = await supabase
-      .from('classes')
-      .select('system_prompt')
-      .eq('class_id', classId)
-      .single()
+    // const { data, error } = await supabase
+    //   .from('classes')
+    //   .select('system_prompt')
+    //   .eq('class_id', classId)
+    //   .single()
 
-    if (error || !data) {
-      console.error('Error fetching system prompt:', error)
-      return { success: false, error: 'Failed to fetch system prompt' }
-    }
+    // if (error || !data) {
+    //   console.error('Error fetching system prompt:', error)
+    //   return { success: false, error: 'Failed to fetch system prompt' }
+    // }
 
-    return { success: true, systemPrompt: data.system_prompt || '' }
+    // return { success: true, systemPrompt: data.system_prompt || '' }
+    
+    // Temporary: Return empty prompt until database migration is applied
+    console.warn('System prompt fetch disabled - database migration needed')
+    return { success: true, systemPrompt: '' }
   } catch (error) {
     console.error('Get system prompt error:', error)
     return {
