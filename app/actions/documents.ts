@@ -22,7 +22,7 @@ export interface DocumentWithDetails {
   storage_path: string | null
   created_at: string
   updated_at: string | null
-  class_id: string | null
+  classroom_id: string | null
   class_name: string | null
   owner_name: string | null
   owner_username: string | null
@@ -51,6 +51,14 @@ export async function uploadDocument(
     const file = formData.get('file') as File
     const title = formData.get('title') as string
     const classId = formData.get('classId') as string
+
+    console.log('Debug - Form Data received:', {
+      hasFile: !!file,
+      fileName: file?.name,
+      title,
+      classId,
+      userId: user.id // Debug user ID as well
+    })
 
     if (!file) {
       return { success: false, error: 'No file provided' }
@@ -87,7 +95,7 @@ export async function uploadDocument(
       .from('documents')
       .upload(storagePath, file, {
         cacheControl: '3600',
-        upsert: false,
+        upsert: true,
       })
 
     if (uploadError) {
@@ -99,16 +107,20 @@ export async function uploadDocument(
     }
 
     // Create database entry
+    const documentData = {
+      user_id: user.id,
+      title: title,
+      storage_path: storagePath,
+      file_type: fileType,
+      file_size: file.size,
+      classroom_id: classId  // Fixed: using classroom_id instead of class_id
+    }
+
+    console.log('Debug - Inserting document with data:', documentData)
+
     const { data: document, error: dbError } = await supabase
       .from('documents')
-      .insert({
-        user_id: user.id,
-        title: title,
-        storage_path: storagePath,
-        file_type: fileType,
-        file_size: file.size,
-        class_id: classId,
-      })
+      .insert(documentData)
       .select()
       .single()
 
@@ -125,6 +137,7 @@ export async function uploadDocument(
 
     revalidatePath('/docs')
     revalidatePath(`/classes/${classId}`)
+    revalidatePath(`/dashboard/classes/${classId}/documents`)
 
     return {
       success: true,
@@ -155,8 +168,7 @@ export async function getDocumentsByClass(
 
     const { data, error } = await supabase
       .from('documents')
-      .select(
-        `
+      .select(`
         id,
         title,
         file_type,
@@ -164,12 +176,11 @@ export async function getDocumentsByClass(
         storage_path,
         created_at,
         updated_at,
-        class_id,
+        classroom_id,
         classes (class_name),
         Profiles (full_name, username)
-      `
-      )
-      .eq('class_id', classId)
+      `)
+      .eq('classroom_id', classId)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -186,7 +197,7 @@ export async function getDocumentsByClass(
         storage_path: doc.storage_path,
         created_at: doc.created_at,
         updated_at: doc.updated_at,
-        class_id: doc.class_id,
+        classroom_id: doc.classroom_id,
         class_name: doc.classes?.class_name || null,
         owner_name: doc.Profiles?.full_name || null,
         owner_username: doc.Profiles?.username || null,
@@ -224,7 +235,7 @@ export async function getMyDocuments(): Promise<DocumentWithDetails[]> {
         storage_path,
         created_at,
         updated_at,
-        class_id,
+        classroom_id,
         classes (class_name),
         Profiles (full_name, username)
       `
@@ -246,7 +257,7 @@ export async function getMyDocuments(): Promise<DocumentWithDetails[]> {
         storage_path: doc.storage_path,
         created_at: doc.created_at,
         updated_at: doc.updated_at,
-        class_id: doc.class_id,
+        classroom_id: doc.classroom_id,
         class_name: doc.classes?.class_name || null,
         owner_name: doc.Profiles?.full_name || null,
         owner_username: doc.Profiles?.username || null,
@@ -301,10 +312,10 @@ export async function deleteDocument(documentId: string): Promise<{
       return { success: false, error: 'Not authenticated' }
     }
 
-    // Get document to verify ownership and get storage path
+        // Get document to verify ownership and get storage path
     const { data: document, error: fetchError } = await supabase
       .from('documents')
-      .select('user_id, storage_path, class_id')
+      .select('user_id, storage_path, classroom_id')
       .eq('id', documentId)
       .single()
 
@@ -338,7 +349,9 @@ export async function deleteDocument(documentId: string): Promise<{
     }
 
     revalidatePath('/docs')
-    revalidatePath(`/classes/${document.class_id}`)
+    if (document.classroom_id) {
+      revalidatePath(`/classes/${document.classroom_id}`)
+    }
 
     return { success: true }
   } catch (error) {

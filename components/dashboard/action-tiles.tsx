@@ -6,8 +6,9 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
-import { useRef } from 'react'
-
+import { useRef, useState } from 'react'
+import { uploadDocument } from '@/app/actions/documents'
+import { SelectClassDialog } from '../classes/select-class-dialog'
 const actions = [
   { 
     icon: Upload, 
@@ -21,6 +22,8 @@ const actions = [
 export function ActionTiles() {
   const router = useRouter()
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [isSelectingClass, setIsSelectingClass] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
 
   const handleAction = (actionType: string) => {
     switch (actionType) {
@@ -33,22 +36,75 @@ export function ActionTiles() {
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files
     if (files && files.length > 0) {
+      const file = files[0]
+      setSelectedFile(file)
       toast.success('Document selected!', {
-        description: `${files[0].name} ready to upload`
+        description: `${file.name} ready to upload`
       })
-      // Future: Handle actual file upload to class
+      setIsSelectingClass(true)
+    }
+  }
+
+  const handleClassSelect = async (classId: string, className: string) => {
+    if (!selectedFile) return
+
+    console.log('Debug - Uploading file:', {
+      fileName: selectedFile.name,
+      classId,
+      className,
+    })
+
+    const formData = new FormData()
+    formData.append('file', selectedFile)
+    formData.append('title', selectedFile.name)
+    formData.append('classId', classId)
+
+    // Verify FormData contents
+    console.log('Debug - FormData contents:', {
+      file: formData.get('file'),
+      title: formData.get('title'),
+      classId: formData.get('classId'),
+    })
+
+    setIsSelectingClass(false)
+
+    try {
+      const result = await uploadDocument(formData)
+      if (result.success) {
+        toast.success('Document uploaded successfully!', {
+          description: `Added to ${className}`
+        })
+        // Clear the file input and selected file
+        if (fileInputRef.current) {
+          fileInputRef.current.value = ''
+        }
+        setSelectedFile(null)
+      } else {
+        toast.error('Upload failed', {
+          description: result.error
+        })
+      }
+    } catch (error) {
+      toast.error('Upload failed', {
+        description: error instanceof Error ? error.message : 'An error occurred'
+      })
     }
   }
 
   return (
     <>
+      <SelectClassDialog
+        open={isSelectingClass}
+        onClose={() => setIsSelectingClass(false)}
+        onSelect={handleClassSelect}
+      />
       <input
         ref={fileInputRef}
         type="file"
         className="hidden"
         accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.md"
         onChange={handleFileUpload}
-        multiple
+        multiple={false}
       />
       
       <div className="mb-12">
