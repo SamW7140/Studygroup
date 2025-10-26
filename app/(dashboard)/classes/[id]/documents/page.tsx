@@ -2,6 +2,7 @@ import { getDocumentsByClass } from '@/app/actions/documents'
 import { getCurrentUser } from '@/app/actions/auth'
 import { DocumentUploadForm } from '@/components/documents/upload-form'
 import { DocumentList } from '@/components/documents/document-list'
+import { AIAssistant } from '@/components/ai/ai-assistant'
 import { redirect } from 'next/navigation'
 
 interface ClassDocumentsPageProps {
@@ -31,6 +32,13 @@ export default async function ClassDocumentsPage({ params }: ClassDocumentsPageP
         </p>
       </div>
 
+      {/* AI Assistant Section */}
+      {documents.length > 0 && (
+        <div className="mb-8">
+          <AIAssistant classId={classId} />
+        </div>
+      )}
+
       {/* Upload Section */}
       <div className="mb-8">
         <DocumentUploadForm classId={classId} />
@@ -41,12 +49,20 @@ export default async function ClassDocumentsPage({ params }: ClassDocumentsPageP
         <h2 className="mb-4 text-xl font-semibold text-gray-900">
           All Documents ({documents.length})
         </h2>
-        <DocumentList
-          documents={documents}
-          showOwner={true}
-          showDelete={true}
-          currentUserId={user.id}
-        />
+        {documents.length === 0 ? (
+          <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
+            <p className="text-gray-600">
+              No documents uploaded yet. Upload some course materials to get started with the AI assistant!
+            </p>
+          </div>
+        ) : (
+          <DocumentList
+            documents={documents}
+            showOwner={true}
+            showDelete={true}
+            currentUserId={user.id}
+          />
+        )}
       </div>
     </div>
   )

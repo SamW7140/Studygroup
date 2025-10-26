@@ -35,8 +35,16 @@ export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
       throw new Error('You must be logged in to use AI features')
     }
     
-    // TODO: Verify user has access to this class when class_members table is added
-    // For now, allow all authenticated users to query
+    // Verify class exists and user has access
+    const { data: classData, error: classError } = await supabase
+      .from('classes')
+      .select('class_id')
+      .eq('class_id', data.classId)
+      .single()
+    
+    if (classError || !classData) {
+      throw new Error('Class not found or you do not have access to it')
+    }
     
     // Call the AI service
     const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000'
@@ -55,7 +63,8 @@ export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
     
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`AI service error: ${errorText}`)
+      console.error('AI service error:', errorText)
+      throw new Error(`AI service error: ${response.status} - ${errorText}`)
     }
     
     const result: AIQueryResponse = await response.json()
@@ -63,7 +72,16 @@ export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
     
   } catch (error) {
     console.error('Error querying AI:', error)
-    throw error
+    
+    // Provide user-friendly error messages
+    if (error instanceof Error) {
+      if (error.message.includes('fetch')) {
+        throw new Error('Unable to connect to AI service. Please make sure the AI service is running.')
+      }
+      throw error
+    }
+    
+    throw new Error('An unexpected error occurred while querying the AI')
   }
 }
 
@@ -77,7 +95,8 @@ export async function invalidateAICache(classId: string): Promise<void> {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      throw new Error('Unauthorized')
+      console.warn('Cannot invalidate cache: user not authenticated')
+      return
     }
     
     const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000'
@@ -87,10 +106,13 @@ export async function invalidateAICache(classId: string): Promise<void> {
     })
     
     if (!response.ok) {
-      throw new Error('Failed to invalidate cache')
+      const errorText = await response.text()
+      console.warn(`Failed to invalidate cache: ${errorText}`)
+    } else {
+      console.log(`Successfully invalidated AI cache for class ${classId}`)
     }
   } catch (error) {
     console.error('Error invalidating AI cache:', error)
-    throw error
+    // Don't throw - cache invalidation is not critical
   }
 }

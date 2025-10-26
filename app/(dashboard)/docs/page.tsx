@@ -51,7 +51,7 @@ export default async function AllDocumentsPage() {
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mb-8 grid gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-gray-200 bg-white p-6">
           <div className="flex items-center gap-3">
             <div className="rounded-lg bg-blue-100 p-3">
@@ -73,23 +73,9 @@ export default async function AllDocumentsPage() {
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900">
-                {Object.keys(documentsByClass).length}
+                {classes.length}
               </p>
               <p className="text-sm text-gray-600">Classes</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-purple-100 p-3">
-              <FileText className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-gray-900">
-                {user.role === 'professor' ? 'Professor' : 'Student'}
-              </p>
-              <p className="text-sm text-gray-600">Your Role</p>
             </div>
           </div>
         </div>
