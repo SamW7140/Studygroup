@@ -1,6 +1,9 @@
 import { getCurrentUser } from '@/app/actions/auth'
 import { NextResponse } from 'next/server'
 
+// Force dynamic rendering for API routes
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     const user = await getCurrentUser()

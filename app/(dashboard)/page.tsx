@@ -4,6 +4,9 @@ import { FilterableDocumentsGrid } from '@/components/documents/filterable-docum
 import { getAllEnrolledDocuments } from '@/app/actions/documents'
 import { getAllClasses } from '@/app/actions/classes'
 
+// Force dynamic rendering (don't try to statically generate)
+export const dynamic = 'force-dynamic'
+
 export default async function DashboardPage() {
   // Fetch real data from Supabase
   const [documents, classes] = await Promise.all([
