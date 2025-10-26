@@ -9,9 +9,9 @@
 
 **An intelligent, private study hub for college classes** — inspired by Canva's dashboard design with dark gradients, neon glow accents, and smooth animations. Now with **full Supabase backend integration**!
 
-## ✨ Features
+## Features
 
-### 🎨 Design & UI
+### Design & UI
 - **Dark-first theme** with radial indigo→violet gradient backgrounds
 - **Glass morphism** panels with backdrop blur effects
 - **Neon glow accents** (electric cyan/violet) on interactive elements
@@ -19,7 +19,7 @@
 - **Responsive 3-panel layout** with collapsible sidebars
 - **Accessibility-first** with keyboard navigation, ARIA labels, and focus management
 
-### 🚀 Core Functionality
+### Core Functionality
 - **Dashboard** with hero search, action tiles, and recent documents grid
 - **Classes** page with class cards, join codes, and member counts
 - **Document management** with type-based organization (PDF, DOCX, PPTX, etc.)
@@ -30,7 +30,7 @@
   - `[` - Toggle left sidebar
   - `]` - Toggle right sidebar
 
-### 🧩 Tech Stack
+### Tech Stack
 - **Framework**: Next.js 14.2 (App Router) + TypeScript
 - **Styling**: Tailwind CSS with custom design tokens
 - **UI Components**: shadcn/ui (Radix UI primitives)
@@ -40,7 +40,7 @@
 - **Backend**: Supabase (PostgreSQL, Auth, Storage)
 - **Linting**: ESLint + Next.js config
 
-## 🔥 Supabase Backend Integration
+## Supabase Backend Integration
 
 **NEW!** The project now includes complete Supabase integration:
 
@@ -85,7 +85,7 @@ Your app uses the following structure:
 
 **Note**: Classes are stored as flags with `type='Class'`, not in a separate table.
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 - Node.js 18+ or compatible runtime
@@ -123,7 +123,7 @@ Your app uses the following structure:
 4. **Open your browser**
    Navigate to [http://localhost:3000](http://localhost:3000)
 
-## 🗂️ Project Structure
+## Project Structure
 
 ```
 Studygroup/
@@ -164,7 +164,7 @@ Studygroup/
 └── tsconfig.json             # TypeScript configuration
 ```
 
-## 🎨 Design System
+## Design System
 
 ### Color Palette
 ```css
@@ -197,7 +197,7 @@ border: 1px solid rgba(255, 255, 255, 0.1)
 - **Shadows**: Soft, layered with glow effects on hover
 - **Grid**: Responsive (1→2→3→4 columns based on viewport)
 
-## 🧪 Development
+## Development
 
 ### Build for Production
 ```bash
@@ -216,7 +216,7 @@ TypeScript is configured with strict mode. Run type checks with:
 npx tsc --noEmit
 ```
 
-## 🎯 Roadmap & Future Enhancements
+## Roadmap & Future Enhancements
 
 - [ ] **Class Hub** page with tabs (Overview, Documents, AI Chat, People, Settings)
 - [ ] **Document Viewer** with two-pane layout and AI chat integration
@@ -229,7 +229,7 @@ npx tsc --noEmit
 - [ ] **Authentication** with NextAuth.js
 - [ ] **Database** integration (PostgreSQL/Supabase)
 
-## 🤝 Contributing
+## Contributing
 
 This is a showcase project, but contributions are welcome! Please follow these steps:
 
@@ -239,11 +239,11 @@ This is a showcase project, but contributions are welcome! Please follow these s
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE).
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - **Design Inspiration**: Canva Dashboard
 - **UI Components**: [shadcn/ui](https://ui.shadcn.com/)
@@ -252,6 +252,6 @@ This project is open source and available under the [MIT License](LICENSE).
 
 ---
 
-**Built with ❤️ using Next.js and modern web technologies.**
+**Built with care using Next.js and modern web technologies.**
 
 For questions or support, please open an issue on GitHub.
