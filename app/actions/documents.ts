@@ -2,6 +2,7 @@
 
 import { createServerSupabaseClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { invalidateAICache } from './ai-query'
 
 export interface DocumentUploadResult {
   success: boolean
@@ -125,6 +126,14 @@ export async function uploadDocument(
 
     revalidatePath('/docs')
     revalidatePath(`/classes/${classId}`)
+
+    // Invalidate AI cache for this class (fire and forget)
+    try {
+      await invalidateAICache(classId)
+    } catch (cacheError) {
+      // Don't fail the upload if cache invalidation fails
+      console.warn('Failed to invalidate AI cache:', cacheError)
+    }
 
     return {
       success: true,
@@ -339,6 +348,16 @@ export async function deleteDocument(documentId: string): Promise<{
 
     revalidatePath('/docs')
     revalidatePath(`/classes/${document.class_id}`)
+
+    // Invalidate AI cache for this class (fire and forget)
+    if (document.class_id) {
+      try {
+        await invalidateAICache(document.class_id)
+      } catch (cacheError) {
+        // Don't fail the delete if cache invalidation fails
+        console.warn('Failed to invalidate AI cache:', cacheError)
+      }
+    }
 
     return { success: true }
   } catch (error) {

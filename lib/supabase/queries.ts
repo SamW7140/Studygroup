@@ -339,3 +339,38 @@ export async function searchDocuments(
 
   return { data, error }
 }
+
+// ===========================
+// Class-specific Document Queries
+// ===========================
+
+/**
+ * Get all documents for a specific class
+ */
+export async function getDocumentsByClassId(
+  supabase: TypedSupabaseClient,
+  classId: string
+) {
+  const { data, error } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('class_id', classId)
+    .order('created_at', { ascending: false })
+
+  return { data, error }
+}
+
+/**
+ * Get document count for a class
+ */
+export async function getClassDocumentCount(
+  supabase: TypedSupabaseClient,
+  classId: string
+): Promise<{ count: number | null; error: any }> {
+  const { count, error } = await supabase
+    .from('documents')
+    .select('*', { count: 'exact', head: true })
+    .eq('class_id', classId)
+
+  return { count, error }
+}
