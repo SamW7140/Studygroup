@@ -1,19 +1,60 @@
-'use client'
-
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { FileText, Download, Share2, Trash2 } from 'lucide-react'
-import { documents } from '@/app/_data/documents'
-import { formatDate, getInitials } from '@/lib/utils'
+import { getInitials } from '@/lib/utils'
 import { notFound } from 'next/navigation'
+import { createServerSupabaseClient } from '@/lib/supabase/server'
 
-export default function DocumentPage({ params }: { params: { id: string } }) {
-  const document = documents.find(d => d.id === params.id)
+const formatDate = (dateString: string | null) => {
+  if (!dateString) return 'Unknown'
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInMs = now.getTime() - date.getTime()
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
   
-  if (!document) {
+  if (diffInDays === 0) return 'Today'
+  if (diffInDays === 1) return 'Yesterday'
+  if (diffInDays < 7) return `${diffInDays}d ago`
+  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)}w ago`
+  return date.toLocaleDateString()
+}
+
+const formatFileSize = (bytes: number | null) => {
+  if (!bytes) return 'Unknown'
+  if (bytes < 1024) return bytes + ' B'
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+}
+
+export default async function DocumentPage({ params }: { params: { id: string } }) {
+  const supabase = createServerSupabaseClient()
+  
+  // Fetch document with related data
+  const { data: document, error } = await supabase
+    .from('documents')
+    .select(`
+      id,
+      title,
+      file_type,
+      file_size,
+      storage_path,
+      created_at,
+      updated_at,
+      class_id,
+      classes (class_name),
+      Profiles!documents_user_id_fkey (full_name, username)
+    `)
+    .eq('id', params.id)
+    .single()
+  
+  if (error || !document) {
+    console.error('Error fetching document:', error)
     notFound()
   }
+
+  const ownerName = document.Profiles?.full_name || document.Profiles?.username || 'Unknown User'
+  const className = document.classes?.class_name || 'No class'
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -40,7 +81,7 @@ export default function DocumentPage({ params }: { params: { id: string } }) {
               <FileText className="w-24 h-24 text-slate-400 mx-auto mb-4" />
               <p className="text-slate-400">Document preview will appear here</p>
               <p className="text-sm text-slate-500 mt-2">
-                {document.type.toUpperCase()} • {document.size}
+                {document.file_type?.toUpperCase()} • {formatFileSize(document.file_size)}
               </p>
             </div>
           </div>
@@ -65,7 +106,7 @@ export default function DocumentPage({ params }: { params: { id: string } }) {
           <div className="space-y-4 text-sm">
             <div>
               <p className="text-slate-500 mb-1">Class</p>
-              <p className="text-white font-medium">{document.className}</p>
+              <p className="text-white font-medium">{className}</p>
             </div>
 
             <div>
@@ -73,43 +114,27 @@ export default function DocumentPage({ params }: { params: { id: string } }) {
               <div className="flex items-center gap-2">
                 <Avatar className="w-8 h-8">
                   <AvatarFallback className="text-xs bg-white/10">
-                    {getInitials(document.owner)}
+                    {getInitials(ownerName)}
                   </AvatarFallback>
                 </Avatar>
-                <span className="text-white">{document.owner}</span>
+                <span className="text-white">{ownerName}</span>
               </div>
             </div>
 
             <div>
               <p className="text-slate-500 mb-1">Last Updated</p>
-              <p className="text-white">{formatDate(document.lastEdited)}</p>
+              <p className="text-white">{formatDate(document.updated_at || document.created_at)}</p>
             </div>
 
             <div>
               <p className="text-slate-500 mb-1">File Type</p>
-              <p className="text-white uppercase">{document.type}</p>
+              <p className="text-white uppercase">{document.file_type}</p>
             </div>
 
             <div>
               <p className="text-slate-500 mb-1">Size</p>
-              <p className="text-white">{document.size}</p>
+              <p className="text-white">{formatFileSize(document.file_size)}</p>
             </div>
-
-            {document.tags && document.tags.length > 0 && (
-              <div>
-                <p className="text-slate-500 mb-2">Tags</p>
-                <div className="flex flex-wrap gap-2">
-                  {document.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-2 py-1 rounded-lg bg-white/10 text-xs text-white"
-                    >
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </Card>
 

@@ -28,7 +28,7 @@ interface AIQueryResponse {
 export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
   try {
     // Get authenticated user
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
@@ -91,7 +91,7 @@ export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
  */
 export async function invalidateAICache(classId: string): Promise<void> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {

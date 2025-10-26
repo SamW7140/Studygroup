@@ -9,13 +9,13 @@ DROP INDEX IF EXISTS documents_classroom_id_idx;
 ALTER TABLE documents DROP CONSTRAINT IF EXISTS documents_class_id_fkey;
 ALTER TABLE documents DROP CONSTRAINT IF EXISTS documents_classroom_id_fkey;
 
--- Re-add the foreign key constraint
+-- Re-add the foreign key constraint with correct column name
 ALTER TABLE documents 
-ADD CONSTRAINT documents_classroom_id_fkey 
-FOREIGN KEY (classroom_id) 
+ADD CONSTRAINT documents_class_id_fkey 
+FOREIGN KEY (class_id) 
 REFERENCES classes(class_id);
 
--- Re-create the index with new name
-CREATE INDEX documents_classroom_id_idx ON documents(classroom_id);
+-- Re-create the index with correct column name
+CREATE INDEX documents_class_id_idx ON documents(class_id);
 
 COMMIT;

@@ -26,7 +26,7 @@ export interface CreateClassResult {
  */
 export async function createClass(formData: FormData): Promise<CreateClassResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     // Get current user
     const {
@@ -97,7 +97,7 @@ export async function createClass(formData: FormData): Promise<CreateClassResult
  */
 export async function getAllClasses(): Promise<ClassWithDetails[]> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     // Get current user
     const {
@@ -223,7 +223,7 @@ export async function getAllClasses(): Promise<ClassWithDetails[]> {
  */
 export async function getClassById(classId: string): Promise<ClassWithDetails | null> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
       .from('classes')
@@ -262,7 +262,7 @@ export async function deleteClass(classId: string): Promise<{
   error?: string
 }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     // Get current user
     const {

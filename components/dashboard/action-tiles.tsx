@@ -72,7 +72,8 @@ export function ActionTiles() {
       const result = await uploadDocument(formData)
       if (result.success) {
         toast.success('Document uploaded successfully!', {
-          description: `Added to ${className}`
+          description: `Added to ${className}. AI will reindex on next query.`,
+          duration: 5000
         })
         // Clear the file input and selected file
         if (fileInputRef.current) {

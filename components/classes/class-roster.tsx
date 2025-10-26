@@ -11,6 +11,9 @@ interface ClassRosterProps {
 }
 
 export function ClassRoster({ students }: ClassRosterProps) {
+  console.log('ClassRoster received students:', students)
+  console.log('Students array length:', students.length)
+  
   function formatDate(dateString: string) {
     const date = new Date(dateString)
     return date.toLocaleDateString('en-US', {

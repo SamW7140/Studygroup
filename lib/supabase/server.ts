@@ -11,8 +11,8 @@ import type { Database } from './types'
  * Creates a Supabase client for Server Components
  * This handles cookie-based authentication automatically
  */
-export async function createServerSupabaseClient() {
-  const cookieStore = await cookies()
+export function createServerSupabaseClient() {
+  const cookieStore = cookies()
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY

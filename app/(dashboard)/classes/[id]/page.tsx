@@ -6,8 +6,10 @@ import { DocumentUploadForm } from '@/components/documents/upload-form'
 import { DocumentList } from '@/components/documents/document-list'
 import { ClassRoster } from '@/components/classes/class-roster'
 import { EnrollButton } from '@/components/classes/enroll-button'
+import { FloatingChatButton } from '@/components/ai/floating-chat-button'
+import { ClassContextProvider } from '@/components/layout/class-context-provider'
 import { redirect, notFound } from 'next/navigation'
-import { BookOpen, FileText, Users, Copy } from 'lucide-react'
+import { BookOpen, FileText, Users, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { ClassCodeDisplay } from '@/components/classes/class-code-display'
 
@@ -44,6 +46,7 @@ export default async function ClassPage({ params }: ClassPageProps) {
   ])
 
   return (
+    <ClassContextProvider classId={classId} className={classData.class_name || 'Class'}>
     <div className="container mx-auto max-w-7xl p-6">
       {/* Header */}
       <div className="mb-8">
@@ -125,6 +128,17 @@ export default async function ClassPage({ params }: ClassPageProps) {
           <h2 className="text-xl font-semibold text-gray-900">
             Class Documents ({documents.length})
           </h2>
+          
+          {/* AI Chat Link */}
+          {documents.length > 0 && (
+            <Link
+              href={`/classes/${classId}/ai`}
+              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-2 text-sm font-medium text-white hover:from-orange-600 hover:to-orange-700 transition-all"
+            >
+              <Sparkles className="h-4 w-4" />
+              AI Assistant
+            </Link>
+          )}
         </div>
 
         <DocumentList
@@ -146,6 +160,15 @@ export default async function ClassPage({ params }: ClassPageProps) {
           </div>
         )}
       </div>
+
+      {/* Floating Chat Button */}
+      {documents.length > 0 && (
+        <FloatingChatButton 
+          classId={classId} 
+          className={classData.class_name || 'Class'} 
+        />
+      )}
     </div>
+    </ClassContextProvider>
   )
 }

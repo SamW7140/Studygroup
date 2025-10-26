@@ -23,7 +23,7 @@ export async function enrollInClass(classId: string): Promise<{
   error?: string
 }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const {
       data: { user },
@@ -80,7 +80,7 @@ export async function enrollByClassCode(classCode: string): Promise<{
   error?: string
 }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const {
       data: { user },
@@ -145,69 +145,68 @@ export async function enrollByClassCode(classCode: string): Promise<{
 
 /**
  * Get all students enrolled in a class (professors only)
+ * Note: This function assumes authorization has been checked by the caller
  */
 export async function getClassStudents(
   classId: string
 ): Promise<EnrollmentWithUser[]> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
+    
+    console.log('getClassStudents: Fetching students for class:', classId)
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return []
-    }
-
-    // Check if user is a professor
-    const { data: profile } = await supabase
-      .from('Profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    if (profile?.role !== 'professor') {
-      return []
-    }
-
-    // Get enrollments with user details
-    const { data, error } = await supabase
+    // Get enrollments first
+    const { data: enrollments, error: enrollError } = await supabase
       .from('class_enrollments')
-      .select(
-        `
-        user_id,
-        class_id,
-        enrolled_at,
-        Profiles (
-          full_name,
-          username,
-          email,
-          role
-        )
-      `
-      )
+      .select('user_id, class_id, enrolled_at')
       .eq('class_id', classId)
       .order('enrolled_at', { ascending: false })
 
-    if (error) {
-      console.error('Error fetching students:', error)
+    if (enrollError) {
+      console.error('Error fetching enrollments:', enrollError)
       return []
     }
 
-    return (
-      data?.map((enrollment: any) => ({
+    console.log('Fetched enrollments:', enrollments?.length || 0)
+
+    if (!enrollments || enrollments.length === 0) {
+      return []
+    }
+
+    // Get user profiles for each enrollment
+    const userIds = enrollments.map((e) => e.user_id)
+    console.log('Looking up user IDs:', userIds)
+    
+    const { data: profiles, error: profileError } = await supabase
+      .from('Profiles')
+      .select('id, full_name, username, email, role')
+      .in('id', userIds)
+
+    if (profileError) {
+      console.error('Error fetching profiles:', profileError)
+      return []
+    }
+
+    console.log('Fetched profiles:', profiles?.length || 0)
+    console.log('Profile data:', JSON.stringify(profiles, null, 2))
+
+    // Combine enrollments with profiles
+    const profileMap = new Map(profiles?.map((p) => [p.id, p]) || [])
+
+    return enrollments.map((enrollment) => {
+      const profile = profileMap.get(enrollment.user_id)
+      return {
         user_id: enrollment.user_id,
         class_id: enrollment.class_id,
         enrolled_at: enrollment.enrolled_at,
         user: {
-          full_name: enrollment.Profiles?.full_name || null,
-          username: enrollment.Profiles?.username || null,
-          email: enrollment.Profiles?.email || null,
-          role: enrollment.Profiles?.role || null,
+          full_name: profile?.full_name || null,
+          username: profile?.username || null,
+          email: profile?.email || null,
+          role: profile?.role || null,
         },
-      })) || []
-    )
+      }
+    })
   } catch (error) {
     console.error('Error fetching students:', error)
     return []
@@ -221,7 +220,7 @@ export async function getClassEnrollmentCount(
   classId: string
 ): Promise<number> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const { count, error } = await supabase
       .from('class_enrollments')
@@ -245,7 +244,7 @@ export async function getClassEnrollmentCount(
  */
 export async function isEnrolledInClass(classId: string): Promise<boolean> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const {
       data: { user },

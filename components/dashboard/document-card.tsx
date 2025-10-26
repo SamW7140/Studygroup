@@ -3,35 +3,52 @@
 import { motion } from 'framer-motion'
 import { FileText, File, Image as ImageIcon, FileSpreadsheet, MoreVertical } from 'lucide-react'
 import Link from 'next/link'
-import { Document } from '@/app/_data/documents'
-import { formatDate, getInitials } from '@/lib/utils'
+import { DocumentWithDetails } from '@/app/actions/documents'
+import { getInitials } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 
-const typeIcons = {
+const typeIcons: Record<string, any> = {
   pdf: FileText,
   pptx: File,
   docx: FileText,
   png: ImageIcon,
   jpg: ImageIcon,
+  jpeg: ImageIcon,
   xlsx: FileSpreadsheet,
 }
 
-const typeColors = {
+const typeColors: Record<string, string> = {
   pdf: 'from-orange-500 to-orange-600',
   pptx: 'from-orange-400 to-orange-500',
   docx: 'from-orange-600 to-orange-700',
   png: 'from-orange-500 to-orange-600',
   jpg: 'from-orange-500 to-orange-600',
+  jpeg: 'from-orange-500 to-orange-600',
   xlsx: 'from-orange-400 to-orange-500',
 }
 
 interface DocumentCardProps {
-  document: Document
+  document: DocumentWithDetails
+}
+
+// Helper function to format date as relative time
+function formatRelativeTime(dateString: string): string {
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInMs = now.getTime() - date.getTime()
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24))
+
+  if (diffInDays === 0) return 'Today'
+  if (diffInDays === 1) return '1d ago'
+  if (diffInDays < 7) return `${diffInDays}d ago`
+  if (diffInDays < 30) return `${Math.floor(diffInDays / 7)}w ago`
+  if (diffInDays < 365) return `${Math.floor(diffInDays / 30)}mo ago`
+  return `${Math.floor(diffInDays / 365)}y ago`
 }
 
 export function DocumentCard({ document }: DocumentCardProps) {
-  const Icon = typeIcons[document.type]
+  const Icon = typeIcons[document.file_type] || FileText
 
   return (
     <motion.div
@@ -47,7 +64,7 @@ export function DocumentCard({ document }: DocumentCardProps) {
           <div
             className={`
               w-full aspect-[4/3] rounded-xl mb-4
-              bg-gradient-to-br ${typeColors[document.type]}
+              bg-gradient-to-br ${typeColors[document.file_type] || 'from-gray-500 to-gray-600'}
               flex items-center justify-center
               shadow-lg
               group-hover:shadow-orange-500/30
@@ -66,15 +83,15 @@ export function DocumentCard({ document }: DocumentCardProps) {
             <div className="flex items-center gap-2 text-sm text-slate-300">
               <Avatar className="w-6 h-6">
                 <AvatarFallback className="text-xs bg-white/10">
-                  {getInitials(document.owner)}
+                  {getInitials(document.owner_name || document.owner_username || 'Unknown')}
                 </AvatarFallback>
               </Avatar>
-              <span className="truncate">{document.owner}</span>
+              <span className="truncate">{document.owner_name || document.owner_username || 'Unknown'}</span>
             </div>
 
             <div className="flex items-center justify-between text-xs text-slate-400">
-              <span>{formatDate(document.lastEdited)}</span>
-              <span className="uppercase font-medium">{document.type}</span>
+              <span>{formatRelativeTime(document.created_at)}</span>
+              <span className="uppercase font-medium">{document.file_type}</span>
             </div>
           </div>
 

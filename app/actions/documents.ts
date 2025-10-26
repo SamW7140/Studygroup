@@ -23,7 +23,7 @@ export interface DocumentWithDetails {
   storage_path: string | null
   created_at: string
   updated_at: string | null
-  classroom_id: string | null
+  class_id: string | null
   class_name: string | null
   owner_name: string | null
   owner_username: string | null
@@ -36,7 +36,7 @@ export async function uploadDocument(
   formData: FormData
 ): Promise<DocumentUploadResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     // Get current user
     const {
@@ -114,7 +114,7 @@ export async function uploadDocument(
       storage_path: storagePath,
       file_type: fileType,
       file_size: file.size,
-      classroom_id: classId  // Fixed: using classroom_id instead of class_id
+      class_id: classId
     }
 
     console.log('Debug - Inserting document with data:', documentData)
@@ -141,11 +141,13 @@ export async function uploadDocument(
     revalidatePath(`/dashboard/classes/${classId}/documents`)
 
     // Invalidate AI cache for this class (fire and forget)
+    // This will force the AI service to reindex documents on the next query
     try {
       await invalidateAICache(classId)
+      console.log(`✅ AI cache invalidated for class ${classId} - documents will be reindexed on next query`)
     } catch (cacheError) {
       // Don't fail the upload if cache invalidation fails
-      console.warn('Failed to invalidate AI cache:', cacheError)
+      console.warn('⚠️ Failed to invalidate AI cache (non-critical):', cacheError)
     }
 
     return {
@@ -173,7 +175,7 @@ export async function getDocumentsByClass(
   classId: string
 ): Promise<DocumentWithDetails[]> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase
       .from('documents')
@@ -185,11 +187,11 @@ export async function getDocumentsByClass(
         storage_path,
         created_at,
         updated_at,
-        classroom_id,
+        class_id,
         classes (class_name),
-        Profiles (full_name, username)
+        Profiles!documents_user_id_fkey (full_name, username)
       `)
-      .eq('classroom_id', classId)
+      .eq('class_id', classId)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -206,7 +208,7 @@ export async function getDocumentsByClass(
         storage_path: doc.storage_path,
         created_at: doc.created_at,
         updated_at: doc.updated_at,
-        classroom_id: doc.classroom_id,
+        class_id: doc.class_id,
         class_name: doc.classes?.class_name || null,
         owner_name: doc.Profiles?.full_name || null,
         owner_username: doc.Profiles?.username || null,
@@ -223,7 +225,7 @@ export async function getDocumentsByClass(
  */
 export async function getMyDocuments(): Promise<DocumentWithDetails[]> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const {
       data: { user },
@@ -244,9 +246,9 @@ export async function getMyDocuments(): Promise<DocumentWithDetails[]> {
         storage_path,
         created_at,
         updated_at,
-        classroom_id,
+        class_id,
         classes (class_name),
-        Profiles (full_name, username)
+        Profiles!documents_user_id_fkey (full_name, username)
       `
       )
       .eq('user_id', user.id)
@@ -266,7 +268,7 @@ export async function getMyDocuments(): Promise<DocumentWithDetails[]> {
         storage_path: doc.storage_path,
         created_at: doc.created_at,
         updated_at: doc.updated_at,
-        classroom_id: doc.classroom_id,
+        class_id: doc.class_id,
         class_name: doc.classes?.class_name || null,
         owner_name: doc.Profiles?.full_name || null,
         owner_username: doc.Profiles?.username || null,
@@ -285,7 +287,7 @@ export async function getDocumentDownloadUrl(
   storagePath: string
 ): Promise<string | null> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const { data, error } = await supabase.storage
       .from('documents')
@@ -304,6 +306,211 @@ export async function getDocumentDownloadUrl(
 }
 
 /**
+ * Get recent documents for the current user (for sidebar)
+ */
+export async function getRecentDocuments(limit: number = 6): Promise<DocumentWithDetails[]> {
+  try {
+    const supabase = createServerSupabaseClient()
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return []
+    }
+
+    // Get documents from classes the user is enrolled in
+    const { data, error } = await supabase
+      .from('documents')
+      .select(
+        `
+        id,
+        title,
+        file_type,
+        file_size,
+        storage_path,
+        created_at,
+        updated_at,
+        class_id,
+        classes (class_name),
+        Profiles!documents_user_id_fkey (full_name, username)
+      `
+      )
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .order('created_at', { ascending: false })
+      .limit(limit)
+
+    if (error) {
+      console.error('Error fetching recent documents:', error)
+      return []
+    }
+
+    return (
+      data?.map((doc: any) => ({
+        id: doc.id,
+        title: doc.title,
+        file_type: doc.file_type,
+        file_size: doc.file_size,
+        storage_path: doc.storage_path,
+        created_at: doc.created_at,
+        updated_at: doc.updated_at,
+        class_id: doc.class_id,
+        class_name: doc.classes?.class_name || null,
+        owner_name: doc.Profiles?.full_name || null,
+        owner_username: doc.Profiles?.username || null,
+      })) || []
+    )
+  } catch (error) {
+    console.error('Error fetching recent documents:', error)
+    return []
+  }
+}
+
+export interface GetAllEnrolledDocumentsOptions {
+  classId?: string
+  fileTypes?: string[]
+  searchTerm?: string
+  sortBy?: 'newest' | 'oldest' | 'title' | 'type'
+  limit?: number
+}
+
+/**
+ * Get all documents from classes the user is enrolled in
+ * with optional filtering and sorting
+ */
+export async function getAllEnrolledDocuments(
+  options: GetAllEnrolledDocumentsOptions = {}
+): Promise<DocumentWithDetails[]> {
+  try {
+    const supabase = createServerSupabaseClient()
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      console.log('📋 getAllEnrolledDocuments: No authenticated user')
+      return []
+    }
+
+    console.log('📋 getAllEnrolledDocuments: Fetching for user', user.id)
+
+    const {
+      classId,
+      fileTypes,
+      searchTerm,
+      sortBy = 'newest',
+      limit,
+    } = options
+
+    // Get class IDs the user is enrolled in
+    const { data: enrollments, error: enrollError } = await supabase
+      .from('class_enrollments')
+      .select('class_id')
+      .eq('user_id', user.id)
+
+    if (enrollError) {
+      console.error('Error fetching enrollments:', enrollError)
+      // Continue anyway - show all documents if enrollment check fails
+    }
+
+    const enrolledClassIds = enrollments?.map((e) => e.class_id) || []
+    console.log('📋 User enrolled in', enrolledClassIds.length, 'classes:', enrolledClassIds)
+
+    // Build the query
+    let query = supabase
+      .from('documents')
+      .select(
+        `
+        id,
+        title,
+        file_type,
+        file_size,
+        storage_path,
+        created_at,
+        updated_at,
+        class_id,
+        user_id,
+        classes (class_name),
+        Profiles!documents_user_id_fkey (full_name, username)
+      `
+      )
+
+    // If user is enrolled in classes, filter by those classes
+    // Otherwise, show all documents (for discovery)
+    if (enrolledClassIds.length > 0) {
+      query = query.in('class_id', enrolledClassIds)
+    }
+
+    // Apply class filter if specified
+    if (classId) {
+      query = query.eq('class_id', classId)
+    }
+
+    // Apply file type filter if specified
+    if (fileTypes && fileTypes.length > 0) {
+      query = query.in('file_type', fileTypes)
+    }
+
+    // Apply search filter if specified
+    if (searchTerm && searchTerm.trim()) {
+      query = query.ilike('title', `%${searchTerm.trim()}%`)
+    }
+
+    // Apply sorting
+    switch (sortBy) {
+      case 'oldest':
+        query = query.order('created_at', { ascending: true })
+        break
+      case 'title':
+        query = query.order('title', { ascending: true })
+        break
+      case 'type':
+        query = query.order('file_type', { ascending: true })
+        break
+      case 'newest':
+      default:
+        query = query.order('created_at', { ascending: false })
+        break
+    }
+
+    // Apply limit if specified
+    if (limit) {
+      query = query.limit(limit)
+    }
+
+    const { data, error } = await query
+
+    if (error) {
+      console.error('Error fetching enrolled documents:', error)
+      return []
+    }
+
+    console.log('📋 Found', data?.length || 0, 'documents')
+
+    return (
+      data?.map((doc: any) => ({
+        id: doc.id,
+        title: doc.title,
+        file_type: doc.file_type,
+        file_size: doc.file_size,
+        storage_path: doc.storage_path,
+        created_at: doc.created_at,
+        updated_at: doc.updated_at,
+        class_id: doc.class_id,
+        class_name: doc.classes?.class_name || null,
+        owner_name: doc.Profiles?.full_name || null,
+        owner_username: doc.Profiles?.username || null,
+      })) || []
+    )
+  } catch (error) {
+    console.error('Error fetching enrolled documents:', error)
+    return []
+  }
+}
+
+/**
  * Delete a document (only if owner)
  */
 export async function deleteDocument(documentId: string): Promise<{
@@ -311,7 +518,7 @@ export async function deleteDocument(documentId: string): Promise<{
   error?: string
 }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     const {
       data: { user },
@@ -324,7 +531,7 @@ export async function deleteDocument(documentId: string): Promise<{
         // Get document to verify ownership and get storage path
     const { data: document, error: fetchError } = await supabase
       .from('documents')
-      .select('user_id, storage_path, classroom_id')
+      .select('user_id, storage_path, class_id')
       .eq('id', documentId)
       .single()
 
@@ -358,17 +565,18 @@ export async function deleteDocument(documentId: string): Promise<{
     }
 
     revalidatePath('/docs')
-    if (document.classroom_id) {
-      revalidatePath(`/classes/${document.classroom_id}`)
+    if (document.class_id) {
+      revalidatePath(`/classes/${document.class_id}`)
     }
 
     // Invalidate AI cache for this class (fire and forget)
     if (document.class_id) {
       try {
         await invalidateAICache(document.class_id)
+        console.log(`✅ AI cache invalidated for class ${document.class_id} after document deletion`)
       } catch (cacheError) {
         // Don't fail the delete if cache invalidation fails
-        console.warn('Failed to invalidate AI cache:', cacheError)
+        console.warn('⚠️ Failed to invalidate AI cache (non-critical):', cacheError)
       }
     }
 

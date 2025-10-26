@@ -6,7 +6,7 @@ import { redirect } from 'next/navigation'
 
 export async function signOut(): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
     const { error } = await supabase.auth.signOut()
     
     if (error) {
@@ -24,7 +24,7 @@ export async function signOut(): Promise<{ success: boolean; error?: string }> {
 }
 
 export async function getCurrentUser() {
-  const supabase = await createServerSupabaseClient()
+  const supabase = createServerSupabaseClient()
   
   const { data: { user }, error } = await supabase.auth.getUser()
   
@@ -50,7 +50,7 @@ export async function updateUserProfile(
   formData: FormData
 ): Promise<{ success: boolean; error?: string }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = createServerSupabaseClient()
 
     // Get current user
     const {

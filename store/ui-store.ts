@@ -1,11 +1,15 @@
 import { create } from 'zustand'
-import { persist } from 'zustand/middleware'
+import { persist, createJSONStorage } from 'zustand/middleware'
 
 interface UIState {
   // Sidebar states
   leftSidebarOpen: boolean
   rightSidebarOpen: boolean
-  rightSidebarMode: 'upcoming' | 'ai-chat'
+  rightSidebarMode: 'recent' | 'ai-chat'
+  
+  // AI Chat context
+  currentClassId: string | null
+  currentClassName: string | null
   
   // View preferences
   viewMode: 'grid' | 'list'
@@ -19,7 +23,8 @@ interface UIState {
   toggleLeftSidebar: () => void
   toggleRightSidebar: () => void
   openAIChat: () => void
-  setRightSidebarMode: (mode: 'upcoming' | 'ai-chat') => void
+  setRightSidebarMode: (mode: 'recent' | 'ai-chat') => void
+  setCurrentClass: (classId: string | null, className: string | null) => void
   setViewMode: (mode: 'grid' | 'list') => void
   setSortBy: (sort: 'recent' | 'name' | 'date') => void
   setFilterOwner: (filter: 'all' | 'me') => void
@@ -32,7 +37,9 @@ export const useUIStore = create<UIState>()(
       // Initial states
       leftSidebarOpen: true,
       rightSidebarOpen: true,
-      rightSidebarMode: 'upcoming',
+      rightSidebarMode: 'recent',
+      currentClassId: null,
+      currentClassName: null,
       viewMode: 'grid',
       sortBy: 'recent',
       filterOwner: 'all',
@@ -43,6 +50,7 @@ export const useUIStore = create<UIState>()(
       toggleRightSidebar: () => set((state) => ({ rightSidebarOpen: !state.rightSidebarOpen })),
       openAIChat: () => set({ rightSidebarOpen: true, rightSidebarMode: 'ai-chat' }),
       setRightSidebarMode: (mode) => set({ rightSidebarMode: mode }),
+      setCurrentClass: (classId, className) => set({ currentClassId: classId, currentClassName: className }),
       setViewMode: (mode) => set({ viewMode: mode }),
       setSortBy: (sort) => set({ sortBy: sort }),
       setFilterOwner: (filter) => set({ filterOwner: filter }),
@@ -50,6 +58,8 @@ export const useUIStore = create<UIState>()(
     }),
     {
       name: 'study-group-ui-storage',
+      storage: createJSONStorage(() => typeof window !== 'undefined' ? localStorage : undefined as any),
+      skipHydration: false,
     }
   )
 )

@@ -19,7 +19,7 @@ create policy "Users can view documents from their enrolled classes"
     exists (
       select 1 
       from class_enrollments 
-      where class_enrollments.class_id = documents.classroom_id 
+      where class_enrollments.class_id = documents.class_id 
       and class_enrollments.user_id = auth.uid()
     )
   );
