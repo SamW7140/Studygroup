@@ -38,19 +38,19 @@ export function DocumentList({
   function getFileIcon(fileType: string) {
     switch (fileType) {
       case 'pdf':
-        return <FileText className="h-5 w-5 text-red-600" />
+        return <FileText className="h-5 w-5 text-red-400" />
       case 'pptx':
-        return <Presentation className="h-5 w-5 text-orange-600" />
+        return <Presentation className="h-5 w-5 text-orange-400" />
       case 'docx':
-        return <FileText className="h-5 w-5 text-blue-600" />
+        return <FileText className="h-5 w-5 text-blue-400" />
       case 'xlsx':
-        return <FileSpreadsheet className="h-5 w-5 text-green-600" />
+        return <FileSpreadsheet className="h-5 w-5 text-green-400" />
       case 'png':
       case 'jpg':
       case 'jpeg':
-        return <ImageIcon className="h-5 w-5 text-purple-600" />
+        return <ImageIcon className="h-5 w-5 text-purple-400" />
       default:
-        return <FileText className="h-5 w-5 text-gray-600" />
+        return <FileText className="h-5 w-5 text-muted-foreground" />
     }
   }
 
@@ -104,9 +104,9 @@ export function DocumentList({
 
   if (documents.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 bg-gray-50 p-8 text-center">
-        <FileText className="mx-auto mb-2 h-12 w-12 text-gray-400" />
-        <p className="text-sm text-gray-600">No documents yet</p>
+      <div className="rounded-lg border border-border bg-card p-8 text-center">
+        <FileText className="mx-auto mb-2 h-12 w-12 text-muted-foreground" />
+        <p className="text-sm text-muted-foreground">No documents yet</p>
       </div>
     )
   }
@@ -120,21 +120,21 @@ export function DocumentList({
         return (
           <div
             key={doc.id}
-            className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-4 transition-shadow hover:shadow-md"
+            className="flex items-center justify-between rounded-lg border border-border bg-card p-4 transition-shadow hover:shadow-md"
           >
             {/* Left: Icon and Info */}
             <div className="flex flex-1 items-center gap-3">
               {getFileIcon(doc.file_type)}
 
               <div className="flex-1">
-                <h4 className="font-medium text-gray-900">{doc.title}</h4>
-                <div className="mt-1 flex items-center gap-3 text-xs text-gray-500">
+                <h4 className="font-medium text-card-foreground">{doc.title}</h4>
+                <div className="mt-1 flex items-center gap-3 text-xs text-muted-foreground">
                   {showOwner && doc.owner_name && (
                     <span>{doc.owner_name}</span>
                   )}
                   <span>{formatFileSize(doc.file_size)}</span>
                   <span>{formatDate(doc.created_at)}</span>
-                  <span className="rounded bg-gray-100 px-2 py-0.5 font-mono uppercase">
+                  <span className="rounded bg-secondary px-2 py-0.5 font-mono uppercase">
                     {doc.file_type}
                   </span>
                 </div>

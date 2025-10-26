@@ -44,38 +44,38 @@ export default async function AllDocumentsPage() {
     <div className="container mx-auto max-w-7xl p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">All Documents</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">All Documents</h1>
+        <p className="mt-2 text-muted-foreground">
           View and manage all your uploaded documents
         </p>
       </div>
 
       {/* Stats */}
       <div className="mb-8 grid gap-4 sm:grid-cols-2">
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-blue-100 p-3">
-              <FileText className="h-6 w-6 text-blue-600" />
+            <div className="rounded-lg bg-blue-500/10 p-3">
+              <FileText className="h-6 w-6 text-blue-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-card-foreground">
                 {documents.length}
               </p>
-              <p className="text-sm text-gray-600">Total Documents</p>
+              <p className="text-sm text-muted-foreground">Total Documents</p>
             </div>
           </div>
         </div>
 
-        <div className="rounded-lg border border-gray-200 bg-white p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-green-100 p-3">
-              <BookOpen className="h-6 w-6 text-green-600" />
+            <div className="rounded-lg bg-green-500/10 p-3">
+              <BookOpen className="h-6 w-6 text-green-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-2xl font-bold text-card-foreground">
                 {classes.length}
               </p>
-              <p className="text-sm text-gray-600">Classes</p>
+              <p className="text-sm text-muted-foreground">Classes</p>
             </div>
           </div>
         </div>
@@ -92,13 +92,13 @@ export default async function AllDocumentsPage() {
           return (
             <div key={classId}>
               <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-xl font-semibold text-gray-900">
+                <h2 className="text-xl font-semibold text-foreground">
                   {className}
                 </h2>
                 {classId !== 'unassigned' && (
                   <Link
                     href={`/classes/${classId}`}
-                    className="text-sm text-blue-600 hover:text-blue-700"
+                    className="text-sm text-blue-400 hover:text-blue-300"
                   >
                     View class →
                   </Link>
@@ -119,12 +119,12 @@ export default async function AllDocumentsPage() {
         })}
 
         {documents.length === 0 && (
-          <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
-            <FileText className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+          <div className="rounded-lg border border-border bg-card p-12 text-center">
+            <FileText className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold text-foreground">
               No documents yet
             </h3>
-            <p className="mb-4 text-sm text-gray-600">
+            <p className="mb-4 text-sm text-muted-foreground">
               Upload your first document to get started
             </p>
             <Link

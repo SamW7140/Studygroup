@@ -9,7 +9,7 @@ import { EnrollButton } from '@/components/classes/enroll-button'
 import { FloatingChatButton } from '@/components/ai/floating-chat-button'
 import { ClassContextProvider } from '@/components/layout/class-context-provider'
 import { redirect, notFound } from 'next/navigation'
-import { BookOpen, FileText, Users, Sparkles } from 'lucide-react'
+import { BookOpen, FileText, Users, Sparkles, Settings } from 'lucide-react'
 import Link from 'next/link'
 import { ClassCodeDisplay } from '@/components/classes/class-code-display'
 
@@ -81,10 +81,23 @@ export default async function ClassPage({ params }: ClassPageProps) {
             </div>
           </div>
           
-          {/* Enroll Button for Students */}
-          {isStudent && !userIsEnrolled && (
-            <EnrollButton classId={classId} />
-          )}
+          <div className="flex gap-2">
+            {/* Settings Button for Professors */}
+            {isProfessor && (
+              <Link
+                href={`/classes/${classId}/settings`}
+                className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <Settings className="h-4 w-4" />
+                Settings
+              </Link>
+            )}
+            
+            {/* Enroll Button for Students */}
+            {isStudent && !userIsEnrolled && (
+              <EnrollButton classId={classId} />
+            )}
+          </div>
         </div>
       </div>
 
@@ -160,14 +173,6 @@ export default async function ClassPage({ params }: ClassPageProps) {
           </div>
         )}
       </div>
-
-      {/* Floating Chat Button */}
-      {documents.length > 0 && (
-        <FloatingChatButton 
-          classId={classId} 
-          className={classData.class_name || 'Class'} 
-        />
-      )}
     </div>
     </ClassContextProvider>
   )

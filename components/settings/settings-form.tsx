@@ -51,7 +51,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
       <div>
         <label
           htmlFor="username"
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-foreground"
         >
           Username
         </label>
@@ -65,7 +65,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
           className="w-full"
           required
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           This will be displayed on your profile
         </p>
       </div>
@@ -74,7 +74,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
       <div>
         <label
           htmlFor="fullName"
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-foreground"
         >
           Full Name
         </label>
@@ -94,7 +94,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
       <div>
         <label
           htmlFor="email"
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-foreground"
         >
           Email
         </label>
@@ -104,9 +104,9 @@ export function SettingsForm({ user }: SettingsFormProps) {
           name="email"
           value={user.email || ''}
           disabled
-          className="w-full bg-gray-50"
+          className="w-full bg-secondary"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Email cannot be changed
         </p>
       </div>
@@ -115,7 +115,7 @@ export function SettingsForm({ user }: SettingsFormProps) {
       <div>
         <label
           htmlFor="role"
-          className="mb-2 block text-sm font-medium text-gray-700"
+          className="mb-2 block text-sm font-medium text-foreground"
         >
           Account Type
         </label>
@@ -125,23 +125,23 @@ export function SettingsForm({ user }: SettingsFormProps) {
           name="role"
           value={user.role || 'student'}
           disabled
-          className="w-full bg-gray-50 capitalize"
+          className="w-full bg-secondary capitalize"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="mt-1 text-xs text-muted-foreground">
           Account type cannot be changed
         </p>
       </div>
 
       {/* Error Message */}
       {error && (
-        <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+        <div className="rounded-md bg-red-500/10 border border-red-500/20 p-3 text-sm text-red-400">
           {error}
         </div>
       )}
 
       {/* Success Message */}
       {success && (
-        <div className="rounded-md bg-green-50 p-3 text-sm text-green-800">
+        <div className="rounded-md bg-green-500/10 border border-green-500/20 p-3 text-sm text-green-400">
           {success}
         </div>
       )}

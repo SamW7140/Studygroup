@@ -28,7 +28,7 @@ export default async function SettingsPage() {
         <div className="mb-4">
           <Link
             href="/"
-            className="text-sm text-blue-600 hover:text-blue-700"
+            className="text-sm text-blue-400 hover:text-blue-300"
           >
             ← Back to Dashboard
           </Link>
@@ -39,8 +39,8 @@ export default async function SettingsPage() {
             <Settings className="h-6 w-6" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <p className="text-sm text-gray-600">Manage your account settings and preferences</p>
+            <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+            <p className="text-sm text-muted-foreground">Manage your account settings and preferences</p>
           </div>
         </div>
       </div>
@@ -48,43 +48,43 @@ export default async function SettingsPage() {
       {/* Settings Sections */}
       <div className="space-y-6">
         {/* Profile Section */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
           <div className="mb-4 flex items-center gap-2">
-            <User className="h-5 w-5 text-blue-600" />
-            <h2 className="text-xl font-semibold text-gray-900">Profile Information</h2>
+            <User className="h-5 w-5 text-blue-400" />
+            <h2 className="text-xl font-semibold text-card-foreground">Profile Information</h2>
           </div>
           <SettingsForm user={userProfile} />
         </div>
 
         {/* Account Actions */}
-        <div className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
           <div className="mb-4 flex items-center gap-2">
-            <LogOut className="h-5 w-5 text-red-600" />
-            <h2 className="text-xl font-semibold text-gray-900">Account Actions</h2>
+            <LogOut className="h-5 w-5 text-red-400" />
+            <h2 className="text-xl font-semibold text-card-foreground">Account Actions</h2>
           </div>
           
           <div className="space-y-4">
             {/* Account Info */}
-            <div className="rounded-md bg-gray-50 p-4">
+            <div className="rounded-md bg-secondary p-4">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-700">Account Type:</span>
-                  <span className="capitalize text-gray-900">{userProfile.role || 'Student'}</span>
+                  <span className="font-medium text-muted-foreground">Account Type:</span>
+                  <span className="capitalize text-foreground">{userProfile.role || 'Student'}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-700">User ID:</span>
-                  <span className="font-mono text-xs text-gray-600">{userProfile.id}</span>
+                  <span className="font-medium text-muted-foreground">User ID:</span>
+                  <span className="font-mono text-xs text-muted-foreground">{userProfile.id}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="font-medium text-gray-700">Email:</span>
-                  <span className="text-gray-900">{userProfile.email}</span>
+                  <span className="font-medium text-muted-foreground">Email:</span>
+                  <span className="text-foreground">{userProfile.email}</span>
                 </div>
               </div>
             </div>
 
             {/* Sign Out */}
-            <div className="border-t border-gray-200 pt-4">
-              <p className="mb-4 text-sm text-gray-600">
+            <div className="border-t border-border pt-4">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Sign out of your account on this device. You&apos;ll need to sign in again to access your account.
               </p>
               <SignOutButton />

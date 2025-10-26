@@ -20,8 +20,8 @@ export default async function ClassesPage() {
     <div className="container mx-auto max-w-7xl p-6">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">My Classes</h1>
-        <p className="mt-2 text-gray-600">
+        <h1 className="text-3xl font-bold text-foreground">My Classes</h1>
+        <p className="mt-2 text-muted-foreground">
           {isProfessor
             ? 'Manage your classes and course materials'
             : 'Browse and access your enrolled classes'}
@@ -44,7 +44,7 @@ export default async function ClassesPage() {
 
       {/* Classes List */}
       <div>
-        <h2 className="mb-4 text-xl font-semibold text-gray-900">
+        <h2 className="mb-4 text-xl font-semibold text-foreground">
           {isProfessor ? 'Your Classes' : 'Enrolled Classes'} ({classes.length})
         </h2>
         <ClassList classes={classes} />
@@ -52,12 +52,12 @@ export default async function ClassesPage() {
 
       {/* Empty State for Non-Professors */}
       {!isProfessor && classes.length === 0 && (
-        <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
-          <BookOpen className="mx-auto mb-4 h-16 w-16 text-gray-400" />
-          <h3 className="mb-2 text-lg font-semibold text-gray-900">
+        <div className="rounded-lg border border-border bg-card p-12 text-center">
+          <BookOpen className="mx-auto mb-4 h-16 w-16 text-muted-foreground" />
+          <h3 className="mb-2 text-lg font-semibold text-foreground">
             No classes yet
           </h3>
-          <p className="text-sm text-gray-600">
+          <p className="text-sm text-muted-foreground">
             Join a class using a class code to get started
           </p>
         </div>

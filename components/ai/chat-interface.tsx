@@ -2,12 +2,14 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Send, Loader2, Bot, User, FileText, AlertCircle, Sparkles } from 'lucide-react'
+import { Send, Loader2, Bot, User, FileText, AlertCircle, Sparkles, ChevronDown } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card } from '@/components/ui/card'
 import { queryAIWithContext } from '@/app/actions/chat'
+import { SelectClassDialog } from '@/components/classes/select-class-dialog'
 import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 
 interface Message {
   id: string
@@ -30,8 +32,10 @@ export function ChatInterface({ classId, className }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [showClassSelector, setShowClassSelector] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -143,17 +147,33 @@ export function ChatInterface({ classId, className }: ChatInterfaceProps) {
     toast.success('Chat cleared')
   }
 
+  const handleClassSwitch = (newClassId: string, newClassName: string) => {
+    setShowClassSelector(false)
+    // Clear current chat when switching classes
+    setMessages([])
+    // Navigate to the new class AI page
+    router.push(`/classes/${newClassId}/ai`)
+    toast.success(`Switched to ${newClassName}`)
+  }
+
   return (
     <div className="flex flex-col h-full max-h-[600px]">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+        <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center flex-shrink-0">
             <Sparkles className="w-5 h-5 text-white" />
           </div>
-          <div>
+          <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-white">AI Study Assistant</h3>
-            <p className="text-sm text-slate-300">{className}</p>
+            {/* Class Switcher Button */}
+            <button
+              onClick={() => setShowClassSelector(true)}
+              className="flex items-center gap-1 text-sm text-slate-300 hover:text-orange-400 transition-colors group max-w-full"
+            >
+              <span className="truncate">{className}</span>
+              <ChevronDown className="w-3 h-3 flex-shrink-0 group-hover:translate-y-0.5 transition-transform" />
+            </button>
           </div>
         </div>
         {messages.length > 0 && (
@@ -161,7 +181,7 @@ export function ChatInterface({ classId, className }: ChatInterfaceProps) {
             variant="ghost" 
             size="sm" 
             onClick={handleClearChat}
-            className="text-slate-300 hover:text-white"
+            className="text-slate-300 hover:text-white flex-shrink-0"
           >
             Clear Chat
           </Button>
@@ -252,6 +272,13 @@ export function ChatInterface({ classId, className }: ChatInterfaceProps) {
           💡 Tip: Ask specific questions for better results
         </p>
       </div>
+
+      {/* Class Selector Dialog */}
+      <SelectClassDialog
+        open={showClassSelector}
+        onClose={() => setShowClassSelector(false)}
+        onSelect={handleClassSwitch}
+      />
     </div>
   )
 }

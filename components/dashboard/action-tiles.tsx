@@ -124,10 +124,10 @@ export function ActionTiles() {
                 onClick={() => handleAction(action.action)}
                 className="group relative overflow-hidden p-6 rounded-2xl bg-white/10 backdrop-blur-xl border border-orange-500/20 hover:border-orange-500/50 hover:bg-white/15 transition-all hover:shadow-[0_0_25px_rgba(249,115,22,0.2)]"
               >
-                <div className="flex flex-col items-start gap-4">
+                <div className="flex flex-col items-center gap-4">
                   <div
                     className={`
-                      w-16 h-16 rounded-xl bg-gradient-to-br ${action.color}
+                      w-full max-w-2xl h-16 rounded-xl bg-gradient-to-br ${action.color}
                       flex items-center justify-center
                       shadow-lg
                       group-hover:shadow-orange-500/30
@@ -136,7 +136,7 @@ export function ActionTiles() {
                   >
                     <Icon className="w-8 h-8 text-white" />
                   </div>
-                  <div className="text-left">
+                  <div className="text-center">
                     <h3 className="text-lg font-semibold text-white group-hover:text-orange-200 transition-colors mb-1">
                       {action.label}
                     </h3>

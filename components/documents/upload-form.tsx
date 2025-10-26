@@ -68,10 +68,10 @@ export function DocumentUploadForm({
   }
 
   return (
-    <div className="w-full max-w-2xl rounded-lg border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="w-full max-w-2xl rounded-lg border border-[#3d3d3d] bg-[#2d2d2d] p-6 shadow-2xl">
       <div className="mb-4 flex items-center gap-2">
-        <Upload className="h-5 w-5 text-blue-600" />
-        <h3 className="text-lg font-semibold">Upload Document</h3>
+        <Upload className="h-5 w-5 text-orange-500" />
+        <h3 className="text-lg font-semibold text-white">Upload Document</h3>
       </div>
 
       <form id="upload-form" action={handleSubmit} className="space-y-4">
@@ -79,7 +79,7 @@ export function DocumentUploadForm({
         <div>
           <label
             htmlFor="file"
-            className="mb-2 block text-sm font-medium text-gray-700"
+            className="mb-2 block text-sm font-medium text-gray-300"
           >
             Select File
           </label>
@@ -91,7 +91,7 @@ export function DocumentUploadForm({
             accept=".pdf,.pptx,.docx,.png,.jpg,.jpeg,.xlsx"
             required
             disabled={uploading}
-            className="block w-full text-sm text-gray-900 file:mr-4 file:rounded-md file:border-0 file:bg-blue-50 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+            className="block w-full text-sm text-gray-300 file:mr-4 file:rounded-md file:border-0 file:bg-gradient-to-r file:from-orange-500 file:to-orange-600 file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:from-orange-600 hover:file:to-orange-700 file:shadow-lg file:shadow-orange-500/30 disabled:opacity-50 cursor-pointer"
           />
           <p className="mt-1 text-xs text-gray-500">
             Supported: PDF, PPTX, DOCX, PNG, JPG, XLSX (max 50MB)
@@ -100,13 +100,13 @@ export function DocumentUploadForm({
 
         {/* Show selected file info */}
         {selectedFile && (
-          <div className="flex items-center gap-2 rounded-md bg-blue-50 p-3">
-            <FileText className="h-4 w-4 text-blue-600" />
+          <div className="flex items-center gap-2 rounded-md bg-orange-500/10 border border-orange-500/30 p-3">
+            <FileText className="h-4 w-4 text-orange-400" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-gray-200">
                 {selectedFile.name}
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-gray-400">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
             </div>
@@ -117,7 +117,7 @@ export function DocumentUploadForm({
         <div>
           <label
             htmlFor="title"
-            className="mb-2 block text-sm font-medium text-gray-700"
+            className="mb-2 block text-sm font-medium text-gray-300"
           >
             Document Title
           </label>
@@ -128,20 +128,20 @@ export function DocumentUploadForm({
             placeholder="e.g., Lecture 5 Notes"
             required
             disabled={uploading}
-            className="w-full"
+            className="w-full bg-[#1a1a1a] border-[#3d3d3d] text-white placeholder:text-gray-500 focus:ring-orange-500 focus:border-orange-500"
           />
         </div>
 
         {/* Error Message */}
         {error && (
-          <div className="rounded-md bg-red-50 p-3 text-sm text-red-800">
+          <div className="rounded-md bg-red-500/10 border border-red-500/30 p-3 text-sm text-red-400">
             {error}
           </div>
         )}
 
         {/* Success Message */}
         {success && (
-          <div className="rounded-md bg-green-50 p-3 text-sm text-green-800">
+          <div className="rounded-md bg-green-500/10 border border-green-500/30 p-3 text-sm text-green-400">
             {success}
           </div>
         )}
@@ -150,7 +150,7 @@ export function DocumentUploadForm({
         <Button
           type="submit"
           disabled={uploading || !selectedFile}
-          className="w-full"
+          className="w-full bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white font-semibold shadow-lg shadow-orange-500/30 transition-all duration-200 hover:shadow-orange-500/50"
         >
           {uploading ? (
             <>

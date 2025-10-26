@@ -35,10 +35,10 @@ export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
       throw new Error('You must be logged in to use AI features')
     }
     
-    // Verify class exists and user has access
+    // Verify class exists and user has access, and fetch system_prompt
     const { data: classData, error: classError } = await supabase
       .from('classes')
-      .select('class_id')
+      .select('class_id, system_prompt')
       .eq('class_id', data.classId)
       .single()
     
@@ -46,19 +46,26 @@ export async function queryAI(data: AIQueryRequest): Promise<AIQueryResponse> {
       throw new Error('Class not found or you do not have access to it')
     }
     
-    // Call the AI service
+    // Call the AI service with system_prompt if available
     const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:8000'
+    
+    const requestBody: any = {
+      class_id: data.classId,
+      question: data.question,
+      user_id: user.id,
+    }
+    
+    // Include system_prompt if the class has a custom one
+    if (classData.system_prompt) {
+      requestBody.system_prompt = classData.system_prompt
+    }
     
     const response = await fetch(`${AI_SERVICE_URL}/query`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        class_id: data.classId,
-        question: data.question,
-        user_id: user.id,
-      }),
+      body: JSON.stringify(requestBody),
     })
     
     if (!response.ok) {

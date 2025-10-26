@@ -306,3 +306,118 @@ export async function deleteClass(classId: string): Promise<{
     }
   }
 }
+
+/**
+ * Update the system prompt for a class (professors only)
+ */
+export async function updateClassSystemPrompt(
+  classId: string,
+  systemPrompt: string
+): Promise<{
+  success: boolean
+  error?: string
+}> {
+  try {
+    const supabase = createServerSupabaseClient()
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Not authenticated' }
+    }
+
+    // Check if user is a professor
+    const { data: profile } = await supabase
+      .from('Profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'professor') {
+      return { success: false, error: 'Only professors can update system prompts' }
+    }
+
+    // Validate system prompt length (max 2000 characters)
+    if (systemPrompt.length > 2000) {
+      return { success: false, error: 'System prompt must be 2000 characters or less' }
+    }
+
+    // Update the system prompt
+    const { error: updateError } = await supabase
+      .from('classes')
+      .update({ system_prompt: systemPrompt })
+      .eq('class_id', classId)
+
+    if (updateError) {
+      console.error('Error updating system prompt:', updateError)
+      return { success: false, error: `Failed to update system prompt: ${updateError.message}` }
+    }
+
+    revalidatePath(`/classes/${classId}`)
+    revalidatePath(`/classes/${classId}/settings`)
+
+    return { success: true }
+  } catch (error) {
+    console.error('Update system prompt error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to update system prompt',
+    }
+  }
+}
+
+/**
+ * Get the system prompt for a class (professors only)
+ */
+export async function getClassSystemPrompt(classId: string): Promise<{
+  success: boolean
+  systemPrompt?: string
+  error?: string
+}> {
+  try {
+    const supabase = createServerSupabaseClient()
+
+    // Get current user
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+
+    if (!user) {
+      return { success: false, error: 'Not authenticated' }
+    }
+
+    // Check if user is a professor
+    const { data: profile } = await supabase
+      .from('Profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    if (profile?.role !== 'professor') {
+      return { success: false, error: 'Only professors can view system prompts' }
+    }
+
+    // Fetch the system prompt
+    const { data, error } = await supabase
+      .from('classes')
+      .select('system_prompt')
+      .eq('class_id', classId)
+      .single()
+
+    if (error || !data) {
+      console.error('Error fetching system prompt:', error)
+      return { success: false, error: 'Failed to fetch system prompt' }
+    }
+
+    return { success: true, systemPrompt: data.system_prompt || '' }
+  } catch (error) {
+    console.error('Get system prompt error:', error)
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to fetch system prompt',
+    }
+  }
+}
