@@ -19,8 +19,6 @@
 
 **Setup Checklist:** [`SETUP_CHECKLIST.md`](./SETUP_CHECKLIST.md) - Print this out for a smooth demo!
 
-Want the full details? Continue reading below for comprehensive setup instructions.
-
 ---
 
 ## Quick Start for Judges (30 minutes)
