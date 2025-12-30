@@ -13,17 +13,17 @@
 
 ---
 
-## 👨‍⚖️ **FOR JUDGES: Start Here!**
+## FOR JUDGES: Start Here!
 
-**📋 Quick Reference Guide:** [`JUDGES_QUICK_REFERENCE.md`](./JUDGES_QUICK_REFERENCE.md) - Streamlined setup with troubleshooting cheatsheet
+**Quick Reference Guide:** [`JUDGES_QUICK_REFERENCE.md`](./JUDGES_QUICK_REFERENCE.md) - Streamlined setup with troubleshooting cheatsheet
 
-**✅ Setup Checklist:** [`SETUP_CHECKLIST.md`](./SETUP_CHECKLIST.md) - Print this out for a smooth demo!
+**Setup Checklist:** [`SETUP_CHECKLIST.md`](./SETUP_CHECKLIST.md) - Print this out for a smooth demo!
 
 Want the full details? Continue reading below for comprehensive setup instructions.
 
 ---
 
-## 🚀 Quick Start for Judges (30 minutes)
+## Quick Start for Judges (30 minutes)
 
 This guide will get both the Next.js frontend and Python AI service running smoothly.
 
@@ -177,17 +177,17 @@ cd studygroup-ai-service
 python main.py
 ```
 
-**✅ Success Indicators:**
+**Success Indicators:**
 - Frontend: `Ready on http://localhost:3000`
 - AI Service: `Application startup complete` and `Uvicorn running on http://0.0.0.0:8000`
 
 ---
 
-## 🛠️ Common Troubleshooting
+## 🛠 Common Troubleshooting
 
 ### Frontend Issues
 
-#### ❌ Error: "Module not found" or "Cannot find module"
+#### Error: "Module not found" or "Cannot find module"
 **Solution:** Delete `node_modules` and reinstall
 ```bash
 rm -rf node_modules .next
@@ -195,7 +195,7 @@ npm install
 npm run dev
 ```
 
-#### ❌ Error: "Port 3000 is already in use"
+#### Error: "Port 3000 is already in use"
 **Solution:** Kill the process on port 3000
 ```bash
 # Windows PowerShell
@@ -205,7 +205,7 @@ Get-Process node | Stop-Process -Force
 lsof -ti:3000 | xargs kill -9
 ```
 
-#### ❌ Error: "NEXT_PUBLIC_SUPABASE_URL is not defined"
+#### Error: "NEXT_PUBLIC_SUPABASE_URL is not defined"
 **Solution:** Make sure `.env.local` exists and contains valid Supabase credentials
 ```bash
 # Check if file exists
@@ -215,7 +215,7 @@ ls .env.local
 cat .env.local
 ```
 
-#### ❌ Build Error: Type errors or compilation failures
+#### Error: Build Error: Type errors or compilation failures
 **Solution:** Clear Next.js cache
 ```bash
 rm -rf .next
@@ -224,7 +224,7 @@ npm run dev
 
 ### AI Service Issues
 
-#### ❌ Error: "No module named 'supabase'" or import errors
+#### Error: "No module named 'supabase'" or import errors
 **Solution:** Ensure virtual environment is activated and dependencies are installed
 ```bash
 # Activate venv first
@@ -235,7 +235,7 @@ npm run dev
 pip install -r requirements.txt
 ```
 
-#### ❌ Error: "Address already in use" (Port 8000)
+#### Error: "Address already in use" (Port 8000)
 **Solution:** Kill the process on port 8000
 ```bash
 # Windows PowerShell
@@ -246,7 +246,7 @@ if ($process) { Stop-Process -Id $process -Force }
 lsof -ti:8000 | xargs kill -9
 ```
 
-#### ❌ Error: "GOOGLE_API_KEY is not set"
+#### Error: "GOOGLE_API_KEY is not set"
 **Solution:** Make sure `.env` file exists in `studygroup-ai-service` directory
 ```bash
 # Check if file exists
@@ -256,13 +256,13 @@ ls .env
 cat .env | grep GOOGLE_API_KEY
 ```
 
-#### ❌ Error: "Supabase connection failed"
+#### Error: "Supabase connection failed"
 **Solution:** Verify your Supabase credentials
 1. Go to Supabase Dashboard → Project Settings → API
 2. Copy the correct `URL` and `service_role` key (not anon key for AI service)
 3. Update `.env` file with correct values
 
-#### ❌ Error: "Failed to load vector store" or FAISS errors
+#### Error: "Failed to load vector store" or FAISS errors
 **Solution:** Clear vector store cache
 ```bash
 # From studygroup-ai-service directory
@@ -273,13 +273,13 @@ python main.py
 
 ### Database/Supabase Issues
 
-#### ❌ Error: "relation 'profiles' does not exist"
+#### Error: "relation 'profiles' does not exist"
 **Solution:** Run database migrations
 1. Open Supabase Dashboard → SQL Editor
 2. Copy SQL schema from `lib/supabase/README.md`
 3. Execute in SQL Editor
 
-#### ❌ Error: "JWT expired" or authentication errors
+#### Error: "JWT expired" or authentication errors
 **Solution:** Refresh Supabase session
 1. Clear browser cookies/localStorage
 2. Log out and log back in
@@ -287,20 +287,20 @@ python main.py
 
 ### Python Environment Issues
 
-#### ❌ Error: "python: command not found"
+#### Error: "python: command not found"
 **Solution:** Use `python3` instead of `python` (Mac/Linux)
 ```bash
 python3 -m venv venv
 python3 main.py
 ```
 
-#### ❌ Error: PowerShell execution policy error
+#### Error: PowerShell execution policy error
 **Solution:** Enable script execution (Windows)
 ```powershell
 Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 ```
 
-#### ❌ Virtual environment not activating
+#### Error: Virtual environment not activating
 **Solution:** Try alternative activation methods
 ```bash
 # Windows - Try these in order
@@ -315,7 +315,143 @@ source venv/bin/activate
 
 ---
 
-## 🎯 Features
+## Features
+
+**Quick Verification Script:**
+
+Run the automated verification script:
+
+### Frontend Issues
+
+#### Error: "Module not found" or "Cannot find module"
+**Solution:** Delete `node_modules` and reinstall
+```bash
+rm -rf node_modules .next
+npm install
+npm run dev
+```
+
+#### Error: "Port 3000 is already in use"
+**Solution:** Kill the process on port 3000
+```bash
+# Windows PowerShell
+Get-Process node | Stop-Process -Force
+
+# Mac/Linux
+lsof -ti:3000 | xargs kill -9
+```
+
+#### Error: "NEXT_PUBLIC_SUPABASE_URL is not defined"
+**Solution:** Make sure `.env.local` exists and contains valid Supabase credentials
+```bash
+# Check if file exists
+ls .env.local
+
+# Verify it's not empty
+cat .env.local
+```
+
+#### Error: Build Error: Type errors or compilation failures
+**Solution:** Clear Next.js cache
+```bash
+rm -rf .next
+npm run dev
+```
+
+### AI Service Issues
+
+#### Error: "No module named 'supabase'" or import errors
+**Solution:** Ensure virtual environment is activated and dependencies are installed
+```bash
+# Activate venv first
+# Windows: .\venv\Scripts\Activate.ps1
+# Mac/Linux: source venv/bin/activate
+
+# Reinstall dependencies
+pip install -r requirements.txt
+```
+
+#### Error: "Address already in use" (Port 8000)
+**Solution:** Kill the process on port 8000
+```bash
+# Windows PowerShell
+$process = Get-NetTCPConnection -LocalPort 8000 -ErrorAction SilentlyContinue | Select-Object -ExpandProperty OwningProcess -First 1
+if ($process) { Stop-Process -Id $process -Force }
+
+# Mac/Linux
+lsof -ti:8000 | xargs kill -9
+```
+
+#### Error: "GOOGLE_API_KEY is not set"
+**Solution:** Make sure `.env` file exists in `studygroup-ai-service` directory
+```bash
+# Check if file exists
+ls .env
+
+# Verify GOOGLE_API_KEY is set
+cat .env | grep GOOGLE_API_KEY
+```
+
+#### Error: "Supabase connection failed"
+**Solution:** Verify your Supabase credentials
+1. Go to Supabase Dashboard → Project Settings → API
+2. Copy the correct `URL` and `service_role` key (not anon key for AI service)
+3. Update `.env` file with correct values
+
+#### Error: "Failed to load vector store" or FAISS errors
+**Solution:** Clear vector store cache
+```bash
+# From studygroup-ai-service directory
+rm -rf vector_stores
+mkdir vector_stores
+python main.py
+```
+
+### Database/Supabase Issues
+
+#### Error: "relation 'profiles' does not exist"
+**Solution:** Run database migrations
+1. Open Supabase Dashboard → SQL Editor
+2. Copy SQL schema from `lib/supabase/README.md`
+3. Execute in SQL Editor
+
+#### Error: "JWT expired" or authentication errors
+**Solution:** Refresh Supabase session
+1. Clear browser cookies/localStorage
+2. Log out and log back in
+3. Restart frontend dev server
+
+### Python Environment Issues
+
+#### Error: "python: command not found"
+**Solution:** Use `python3` instead of `python` (Mac/Linux)
+```bash
+python3 -m venv venv
+python3 main.py
+```
+
+#### Error: PowerShell execution policy error
+**Solution:** Enable script execution (Windows)
+```powershell
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+```
+
+#### Error: Virtual environment not activating
+**Solution:** Try alternative activation methods
+```bash
+# Windows - Try these in order
+.\venv\Scripts\Activate.ps1
+.\venv\Scripts\activate.bat
+venv\Scripts\python.exe main.py
+
+# Mac/Linux
+source venv/bin/activate
+./venv/bin/python main.py
+```
+
+---
+
+## Features
 
 ### Design & UI
 - **Dark-first theme** with radial indigo→violet gradient backgrounds
@@ -352,7 +488,7 @@ source venv/bin/activate
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 Studygroup/                    # Frontend (Next.js)
@@ -382,7 +518,7 @@ studygroup-ai-service/        # AI Backend (Python)
 
 ---
 
-## 🔧 Advanced Configuration
+## Advanced Configuration
 
 ### Database Schema
 
@@ -407,7 +543,7 @@ CACHE_ENABLED=true               # Cache vector stores for faster queries
 
 ---
 
-## 📚 Additional Documentation
+## Additional Documentation
 
 - **`QUICK_START.md`** - Detailed setup walkthrough
 - **`SUPABASE_SETUP.md`** - Complete Supabase configuration
@@ -416,7 +552,7 @@ CACHE_ENABLED=true               # Cache vector stores for faster queries
 
 ---
 
-## 🎓 How to Demo the App
+## How to Demo the App
 
 1. **Create a class** - Go to Classes → Create Class
 2. **Upload documents** - Upload PDFs, DOCX, or PPTX files
@@ -426,7 +562,7 @@ CACHE_ENABLED=true               # Cache vector stores for faster queries
 
 ---
 
-## 📞 Support
+## Support
 
 If you encounter issues:
 1. Check the troubleshooting section above
@@ -436,11 +572,11 @@ If you encounter issues:
 
 ---
 
-## 📄 License
+## License
 
 This project is open source and available under the [MIT License](LICENSE)
 
-## 🚀 Getting Supabase Credentials
+## Getting Supabase Credentials
 
 ### Where to Find Your Supabase Keys
 
@@ -471,7 +607,7 @@ This project is open source and available under the [MIT License](LICENSE)
 
 ---
 
-## 🎥 Video Demo
+## Video Demo
 
 Check out our demo showcasing:
 - Creating classes and uploading documents
@@ -481,7 +617,7 @@ Check out our demo showcasing:
 
 ---
 
-## 🏗️ Architecture Overview
+## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────┐
@@ -531,7 +667,7 @@ Check out our demo showcasing:
 
 ---
 
-## 🧪 Testing the Setup
+## Testing the Setup
 
 After starting both services, test the integration:
 
@@ -558,7 +694,7 @@ After starting both services, test the integration:
 
 ---
 
-## 📚 Additional Resources
+## Additional Resources
 
 - **Full Documentation**: See `QUICK_START.md` for detailed walkthrough
 - **Supabase Setup**: See `SUPABASE_SETUP.md` for database configuration
@@ -568,7 +704,7 @@ After starting both services, test the integration:
 
 ---
 
-## 💡 Tips for Judges
+## Tips for Judges
 
 1. **If something doesn't work**, check the terminal output for both services
 2. **Most issues are environment variables** - double-check all keys are set
@@ -578,7 +714,7 @@ After starting both services, test the integration:
 
 ---
 
-## 🐛 Known Issues & Solutions
+## Known Issues & Solutions
 
 ### Issue: "Supabase SSL error on Windows"
 **Solution**: Add `--no-check-certificate` flag or update Python to latest version
@@ -598,6 +734,6 @@ chmod 755 vector_stores
 
 ---
 
-## 📄 License
+## License
 
 MIT License - feel free to use this project for learning and development!
